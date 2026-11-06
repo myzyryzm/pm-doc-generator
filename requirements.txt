@@ -1,0 +1,4 @@
+# Generation runs through the `claude` CLI (Claude Code), which must be on your
+# PATH — it is not a Python dependency.
+python-dotenv>=1.0.0     # .env loading
+pyyaml>=6.0              # projects/<name>.yaml

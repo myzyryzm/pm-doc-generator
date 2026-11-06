@@ -1,0 +1,17 @@
+# Local config
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Agent session logs and rendered prompts (per run, can be large)
+logs/
+
+# Default `collect` output directory (export target, rebuilt on demand)
+corpus/
+/stories/
+/actions/
+/prompts/
