@@ -1,7 +1,7 @@
 """
 collect.py — export a project's stories as a corpus a RAG chunker can ingest.
 
-    python cli.py collect realworld --to corpus/
+    python cli.py collect shop-app --to corpus/
 
 Each stories/<project>/<slug>/STORY.md that validates becomes
 <dir>/<project>/<doc_id>.md,

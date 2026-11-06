@@ -1,4 +1,4 @@
-"""Route normalization, matching, links and chains — the RealWorld gotchas."""
+"""Route normalization, matching, links and chains."""
 
 import unittest
 
@@ -27,7 +27,7 @@ class NormalizeTest(unittest.TestCase):
         self.assertEqual(normalize_path("/api", ["/api"]), "/")
 
     def test_join_base(self):
-        self.assertEqual(join_base("articles", "https://api.realworld.io/api/"), "/api/articles")
+        self.assertEqual(join_base("articles", "https://shop.example.com/api/"), "/api/articles")
         self.assertEqual(join_base("/abs", "https://x/api/"), "/abs")
         self.assertEqual(join_base("articles", None), "articles")
 

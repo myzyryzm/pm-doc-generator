@@ -1,0 +1,68 @@
+# shop-app ("Summit Supply") — the example storefront for pm-doc-generator.
+# Repo paths are relative to PROJECT_FOLDER, which must point at the shop-app folder:
+#   PROJECT_FOLDER=~/myzyryzym/shop-app python cli.py map-actions shop-app
+name: shop-app
+description: >
+  Summit Supply — a small outdoor-gear storefront. Shoppers browse a product
+  catalog, open product detail pages, add items to a cart ("Add to cart" or
+  "Buy Now"), and place an order. Shoppers pick a ship-to region (US, CA, EU,
+  UK) and can sign in as a member to get member pricing. Some products can't be
+  sold in some regions, low stock is flagged, out-of-stock items can't be
+  bought, and larger orders ship free.
+
+repos:
+  - name: shop-api
+    path: shop-api                 # relative to PROJECT_FOLDER, absolute, or ~
+    kind: backend
+    hints: |
+      Node + Express 5 + TypeScript (ESM; imports end in .js). No database: the
+      catalog is seeded from src/data/products.json into an in-memory Map
+      (src/products.ts), and carts and orders are also in-memory Maps/arrays.
+      Every route is in src/routes.ts on one Router, which src/app.ts mounts at
+      `/api` (so GET /products is served at /api/products). /health is outside
+      /api and is not a product feature.
+      Route handlers are thin; the logic lives in plain modules:
+        cart.ts (add/remove/view), checkout.ts (placeOrder), pricing.ts
+        (member vs list price, shipping, totals), availability.ts (stock and
+        region checks), serialize.ts (the product shape the storefront sees),
+        regions.ts (reads shopper context from headers).
+      There are no user accounts or auth. Shopper context comes from request
+      headers: X-Session-Id (identifies the cart; required for cart/checkout),
+      X-Buyer-Region (falls back to a configured default), X-Member ("true" =
+      member). Errors are thrown as ApiError(status, code, ...) from
+      src/errors.ts and turned into JSON by errorHandler.
+      Thresholds and fees come from src/config.ts, which reads env/<STAGE>.yml
+      (local.yml, prd-us-east-1.yml) and lets env vars override them; the two
+      stages use different values. tests/*.test.ts are tests, not behavior.
+
+  - name: shop-web
+    path: shop-web
+    kind: frontend
+    hints: |
+      React 18 + Vite + react-router-dom v6 (BrowserRouter) + TypeScript; no
+      state library, just React context.
+      ALL HTTP calls are in src/api/client.ts (the `api` object). Paths there
+      are relative and are prefixed with `/api` inside call(); Vite proxies /api
+      to shop-api in dev. call() also attaches the X-Session-Id (random id kept
+      in localStorage), X-Buyer-Region and X-Member headers on every request.
+      Routes are declared in src/App.tsx; pages are src/pages/{Catalog,Product,Cart}Page.tsx.
+      Region and member state live in src/state/SessionContext.tsx (stored in
+      localStorage); the "Ship to" region picker and the "Sign in as member"
+      toggle are in src/components/Header.tsx. Cart calls go through
+      src/state/CartContext.tsx (add/remove/refresh), not directly from pages,
+      and the cart re-fetches whenever region or member status changes.
+      Both "Add to cart" and "Buy Now" on ProductPage render via
+      src/components/BuyButton.tsx and share one addToCart() handler.
+      "Place order" is on CartPage and calls api.checkout directly.
+
+# Stripped from route and call paths before linking. Needed explicitly here:
+# /health sits outside /api, so a shared prefix can't be inferred.
+api_prefixes: ["/api"]
+
+# v2 (reserved, not used yet): domain vocabulary and extra writing rules.
+glossary: {}
+style:
+  rules: []
+
+collect:
+  out_dir: corpus                  # `collect` writes to <out_dir>/shop-app/

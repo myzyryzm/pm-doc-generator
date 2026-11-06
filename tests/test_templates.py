@@ -1,4 +1,4 @@
-"""Every prompt template renders completely; the real prompts render for RealWorld."""
+"""Every prompt template renders completely; the real prompts render for the fixture maps."""
 
 import unittest
 

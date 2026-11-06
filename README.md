@@ -3,8 +3,8 @@
 Turn a product question into a product document, by reading the code.
 
 ```bash
-python cli.py map-actions  realworld                                  # once per project
-python cli.py create-story realworld "explain the add post feature"   # once per question
+python cli.py map-actions  shop-app                                     # once per project
+python cli.py create-story shop-app "explain the add to cart feature"   # once per question
 ```
 
 A product manager asks about a feature in their own words. The tool works out which
@@ -29,15 +29,15 @@ cp .env.example .env                       # set PROJECT_FOLDER; model, effort, 
 
 python -m unittest discover -s tests -v    # offline; no Claude calls
 
-python cli.py map-actions realworld        # build actions/realworld/*.json + ACTIONS.md
-python cli.py create-story realworld "explain the add post feature" --dry-run
-python cli.py create-story realworld "explain the add post feature"
-python cli.py collect realworld            # → corpus/realworld/
+python cli.py map-actions shop-app         # build actions/shop-app/*.json + ACTIONS.md
+python cli.py create-story shop-app "explain the add to cart feature" --dry-run
+python cli.py create-story shop-app "explain the add to cart feature"
+python cli.py collect shop-app             # → corpus/shop-app/
 ```
 
 The code being documented never lives in this repo. `PROJECT_FOLDER` in `.env` points at
-the folder that holds the project's repos. For RealWorld ("Conduit"), the development
-target, that is a folder containing `backend/` (Serverless/Python) and `frontend/`
+the folder that holds the project's repos. For shop-app ("Summit Supply"), the example
+project, that is a folder containing `shop-api/` (Express/TypeScript) and `shop-web/`
 (React). To run once against a different folder, set it inline:
 
 ```bash
@@ -50,19 +50,19 @@ A project is one YAML file in `projects/`. Pointing the tool at a new app means 
 one of these. No code changes are needed.
 
 ```yaml
-name: realworld                 # no "_" (the corpus splits doc ids on it)
+name: shop-app                  # no "_" (the corpus splits doc ids on it)
 description: >
-  Medium-style blogging: articles with tags, comments, profiles, following, favoriting.
+  Outdoor-gear storefront: catalog, product pages, cart, checkout, member pricing.
 repos:
-  - name: backend
-    path: backend               # relative to PROJECT_FOLDER, absolute, or ~
+  - name: shop-api
+    path: shop-api              # relative to PROJECT_FOLDER, absolute, or ~
     kind: backend               # optional; auto-detected when omitted
     hints: |
-      Every route is in serverless/serverless.yml. Handlers are in serverless/src/*.py.
-  - name: frontend
-    path: frontend
+      Every route is in src/routes.ts, mounted at /api. Logic lives in src/{cart,checkout,pricing}.ts.
+  - name: shop-web
+    path: shop-web
     hints: |
-      All HTTP calls are in src/services/conduit.ts.
+      All HTTP calls are in src/api/client.ts.
 api_prefixes: ["/api"]          # stripped before linking UI calls to routes
 glossary: {}                    # reserved for v2
 style: { rules: [] }            # reserved for v2
@@ -103,8 +103,8 @@ Use `--repos a,b` on any command to work on a subset.
 | `event-consumer` | something triggered by a queue, topic, stream or webhook |
 
 Each action records a file:line entry point, what it calls, what it changes, whether it
-needs sign-in, and a handful of aliases in product vocabulary ("add post", "write an
-article"). The aliases are what let a vague question find the right code.
+needs sign-in, and a handful of aliases in product vocabulary ("add to cart", "buy
+it now"). The aliases are what let a vague question find the right code.
 
 Output goes to `actions/<project>/`:
 
@@ -118,11 +118,11 @@ Output goes to `actions/<project>/`:
 Linking normalizes both sides: `${slug}`, `:slug`, `<int:slug>` and `[slug]` all become
 `{slug}`. It also drops query strings, resolves relative calls against the frontend's
 API base URL, and strips configured or inferred prefixes such as `/api`. A literal
-segment beats a parameter, so `/articles/feed` never matches `/articles/{slug}`.
+segment beats a parameter, so `/products/featured` never matches `/products/{id}`.
 
 ```bash
-python cli.py list-actions realworld --grep favorite
-python cli.py show-action  realworld frontend:ui:publish-article
+python cli.py list-actions shop-app --grep cart
+python cli.py show-action  shop-app shop-web:ui:place-order
 ```
 
 The maps are small and reviewable, and they are the first thing to check when a story

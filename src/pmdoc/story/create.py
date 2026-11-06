@@ -1,7 +1,7 @@
 """
 create.py — the one-shot path: prompt → (map if needed) → resolve → prep → run.
 
-    python cli.py create-story realworld "explain the add post feature"
+    python cli.py create-story shop-app "explain the add to cart feature"
 """
 
 from __future__ import annotations

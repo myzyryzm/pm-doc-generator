@@ -1,9 +1,9 @@
 """
 resolve.py — turn a product question into the actions a story should trace.
 
-"explain the add post feature" names nothing in the code. Resolution maps it
-onto the action map: the "Publish Article" control in the frontend, the
-create-article route in the backend, and the chain that connects them. Those
+"explain the add to cart feature" names nothing in the code. Resolution maps it
+onto the action map: the "Add to cart" button in the frontend, the add-to-cart
+route in the backend, and the chain that connects them. Those
 become the "Start here" entry points of each repo's trace.
 
 Three paths, in order of preference:

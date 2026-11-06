@@ -1,21 +1,21 @@
 """
 link.py — connect actions across repos by HTTP route. Pure functions, no I/O, no LLM.
 
-A frontend action records the calls it makes (`POST articles`, relative to its
+A frontend action records the calls it makes (`POST /cart/items`, relative to its
 HTTP client's base URL); a backend action records the route it serves
-(`POST /api/articles`). Linking matches the two by method and normalized path,
-which turns per-repo inventories into cross-repo chains: the "Publish Article"
-button → the create-article route → its database write.
+(`POST /api/cart/items`). Linking matches the two by method and normalized path,
+which turns per-repo inventories into cross-repo chains: the "Add to cart"
+button → the add-to-cart route → its cart write.
 
 Normalization rules, each covering a real shape:
   * template params `${slug}`, `:slug`, `<int:slug>`, `[slug]` all become `{slug}`;
-  * query strings and fragments are dropped (`articles/feed?${qs}` → `/articles/feed`);
+  * query strings and fragments are dropped (`products?${qs}` → `/products`);
   * a relative call path is joined onto the path part of the client's `api_base`;
   * known prefixes (`/api`, `/v1`, …) are stripped from both sides;
   * literal segments are lower-cased; parameter names never affect a match.
 
 Matching prefers the route with the most literal segments in common, so
-`GET /articles/feed` binds to the feed route, not to `/articles/{slug}`.
+`GET /products/featured` binds to that route, not to `/products/{id}`.
 """
 
 from __future__ import annotations

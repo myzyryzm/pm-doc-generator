@@ -95,13 +95,14 @@ repos:
             with self.subTest(bad=bad), self.assertRaises(ProjectError):
                 load_project(str(self.write(bad)))
 
-    def test_realworld_config_loads(self):
-        (self.tmp / "backend").mkdir()
-        (self.tmp / "frontend").mkdir()
+    def test_shop_app_config_loads(self):
+        (self.tmp / "shop-api").mkdir()
+        (self.tmp / "shop-web").mkdir()
         with project_folder(self.tmp):
-            p = load_project("realworld")
-        self.assertEqual({r.name: r.kind for r in p.repos}, {"backend": "backend", "frontend": "frontend"})
-        self.assertEqual(p.repos[0].path, (self.tmp / "backend").resolve())
+            p = load_project("shop-app")
+        self.assertEqual({r.name: r.kind for r in p.repos}, {"shop-api": "backend", "shop-web": "frontend"})
+        self.assertEqual(p.repos[0].path, (self.tmp / "shop-api").resolve())
+        self.assertEqual(p.api_prefixes, ["/api"])
 
 
 class DetectTest(unittest.TestCase):
