@@ -235,7 +235,7 @@ def resolve_with_claude(prompt: str, candidates: list[dict], project: Project,
 
 def resolve(project: Project, maps: dict[str, dict], links: dict, prompt: str, *,
             pinned: list[str] | None = None, slug: str | None = None,
-            existing_slugs: list[str] = (), log_path: Path, model: str) -> Resolution:
+            existing_slugs: list[str] = [], log_path: Path, model: str) -> Resolution:
     by_id = {a["id"]: a for m in maps.values() for a in m["actions"]}
     repo_kinds = {r.name: r.kind for r in project.repos}
     index = build_index(maps, links)
